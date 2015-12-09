@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 import javax.swing.DefaultListModel;
@@ -89,6 +90,13 @@ public class FileFrame extends JFrame{
 	public boolean createDir(String parentPath)
 	{
 		boolean temp=filelistShow.createDir(parentPath);
+		openFile(parentPath);
+		return temp;
+	}
+	
+	public boolean createTXTfile(String parentPath)
+	{
+		boolean temp=filelistShow.createTXTfile(parentPath);
 		openFile(parentPath);
 		return temp;
 	}
@@ -194,7 +202,14 @@ public class FileFrame extends JFrame{
 				{
 					createDir(pathPanel.getPathInput());
 				}
-				
+				if(temp.equals("新建文件"))
+				{
+					createTXTfile(pathPanel.getPathInput());
+				}
+				if(temp.equals("刷新"))
+				{
+					openFile(pathPanel.getPathInput());
+				}
 			}
 		};
 		
@@ -202,6 +217,8 @@ public class FileFrame extends JFrame{
 		popup.addItemListener(0,itemAction);
 		popup.addItemListener(1, itemAction);
 		popup.addItemListener(2, itemAction);
+		popup.addItemListener(3, itemAction);
+		popup.addItemListener(4, itemAction);
 	}
 }
 
@@ -327,6 +344,27 @@ class FileListPanel extends JPanel
 		}
 		File newDir=new File(f, "新建文件夹"+"("+i+")");
 		newDir.mkdir();
+		return true;
+	}
+	
+	public boolean createTXTfile(String parentPath)
+	{
+		File f=new File(parentPath);
+		if(!f.exists() || !f.isDirectory())  return false;
+		String [] child=f.list();
+		int i =0;    //父目录下有多少“新建文件夹”前缀的文件
+		if(child!=null)
+		{
+			for(String ch : child)
+				if(ch.startsWith("新建文件")) i++;
+		}
+		File newfile =new File(f, "新建文件"+"("+i+")"+".txt");
+		try {
+			newfile.createNewFile();
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
 		return true;
 	}
 }
